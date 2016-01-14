@@ -25,11 +25,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System.Collections;
+using kode80.GUIWrapper;
 
 namespace kode80.EditorTools
 {
 	public class ComponentList : EditorWindow 
 	{
+		private GUIVertical _gui;
+
 		[MenuItem( "Window/kode80/Editor Tools/Component List")]
 		public static void Init()
 		{
@@ -38,8 +41,37 @@ namespace kode80.EditorTools
 			win.Show();
 		}
 
+		public void RefreshList( GameObject gameObject)
+		{
+			_gui = new GUIVertical();
+
+			if( gameObject == null)
+			{
+			}
+			else
+			{
+				Component[] components = gameObject.GetComponents<Component>();
+				int index = 0;
+				foreach( Component component in components)
+				{
+					GUIDelayedIntField field = new GUIDelayedIntField( new GUIContent( component.GetType().Name), 
+																	   index++, 
+																	   ComponentIndexChanged);
+					_gui.Add( field);
+				}
+				Repaint();
+			}
+		}
+
+		void ComponentIndexChanged( GUIBase sender)
+		{
+			GUIDelayedIntField field = sender as GUIDelayedIntField;
+		}
+
 		void OnEnable()
 		{
+			GameObject gameObject = Selection.activeTransform ? Selection.activeTransform.gameObject : null;
+			RefreshList( gameObject);
 		}
 
 		void OnDisable()
@@ -48,6 +80,10 @@ namespace kode80.EditorTools
 
 		void OnGUI()
 		{
+			if( _gui != null)
+			{
+				_gui.OnGUI();
+			}
 		}
 	}
 }
