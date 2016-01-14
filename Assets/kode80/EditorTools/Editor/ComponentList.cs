@@ -51,6 +51,9 @@ namespace kode80.EditorTools
 			}
 			else
 			{
+				GUIScrollView scrollView = new GUIScrollView();
+				_gui.Add( scrollView);
+
 				Component[] components = gameObject.GetComponents<Component>();
 				int index = 0;
 				int maxIndex = Math.Max( 0, components.Length - 1);
@@ -66,7 +69,7 @@ namespace kode80.EditorTools
 					// Transform is always first component & can't be reordered
 					field.isEnabled = index > 1;
 
-					_gui.Add( field);
+					scrollView.Add( field);
 				}
 			}
 
