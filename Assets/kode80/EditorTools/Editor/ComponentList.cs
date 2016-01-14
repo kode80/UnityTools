@@ -115,7 +115,9 @@ namespace kode80.EditorTools
 
 		GameObject SelectedGameObject()
 		{
-			return Selection.activeTransform != null ? Selection.activeTransform.gameObject : null;
+			UnityEngine.Object[] gameObjects = Selection.GetFiltered( typeof( GameObject), 
+																	  SelectionMode.Editable | SelectionMode.TopLevel);
+			return gameObjects.Length > 0 ? gameObjects[0] as GameObject : null;
 		}
 
 		Component GetComponent( GameObject gameObject, int index)
