@@ -24,6 +24,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using System;
 using System.Collections;
 using kode80.GUIWrapper;
 
@@ -52,10 +53,14 @@ namespace kode80.EditorTools
 			{
 				Component[] components = gameObject.GetComponents<Component>();
 				int index = 0;
+				int maxIndex = Math.Min( 0, components.Length - 1);
 				foreach( Component component in components)
 				{
-					GUIDelayedIntField field = new GUIDelayedIntField( new GUIContent( component.GetType().Name), 
+					GUIContent componentName = new GUIContent( component.GetType().Name);
+					GUIDelayedIntField field = new GUIDelayedIntField( componentName, 
 																	   index++, 
+																	   0,
+																	   maxIndex,
 																	   ComponentIndexChanged);
 					_gui.Add( field);
 				}
