@@ -91,13 +91,13 @@ namespace kode80.EditorTools
 			GUIDelayedIntField field = sender as GUIDelayedIntField;
 			GameObject gameObject = SelectedGameObject();
 
-			ReorderComponentNamed( gameObject, field.previousValue, field.value);
+			ReorderComponent( gameObject, field.previousValue, field.value);
 			RefreshList( gameObject);
 		}
 
 		#endregion
 
-		void ReorderComponentNamed( GameObject gameObject, int index, int newIndex)
+		void ReorderComponent( GameObject gameObject, int index, int newIndex)
 		{
 			Component component = GetComponent( gameObject, index);
 			if( component != null)
