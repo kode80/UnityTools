@@ -68,8 +68,9 @@ namespace kode80.EditorTools
 
 					_gui.Add( field);
 				}
-				Repaint();
 			}
+
+			Repaint();
 		}
 
 		void ComponentIndexChanged( GUIBase sender)
@@ -115,6 +116,16 @@ namespace kode80.EditorTools
 			}
 
 			return null;
+		}
+
+		void OnHierarchyChange()
+		{
+			RefreshList( SelectedGameObject());
+		}
+
+		void OnSelectionChange()
+		{
+			RefreshList( SelectedGameObject());
 		}
 
 		void OnEnable()
