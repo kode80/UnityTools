@@ -29,6 +29,8 @@ namespace kode80.GUIWrapper
 {
 	public class GUIDelayedIntField : GUIBase 
 	{
+		private int _previousValue;
+		public int previousValue { get { return _previousValue; } }
 		public int value;
 		public int minValue;
 		public int maxValue;
@@ -39,6 +41,7 @@ namespace kode80.GUIWrapper
 		public GUIDelayedIntField( GUIContent content, int value=0, int minValue=0, int maxValue=0, OnGUIAction action=null)
 		{
 			this.value = value;
+			_previousValue = value;
 			this.minValue = minValue;
 			this.maxValue = maxValue;
 
@@ -52,8 +55,10 @@ namespace kode80.GUIWrapper
 		protected override void CustomOnGUI ()
 		{
 			int newValue = EditorGUILayout.DelayedIntField( _content, value);
+
 			if( newValue != value && newValue >= minValue && newValue <= maxValue)
 			{
+				_previousValue = value;
 				value = newValue;
 				CallGUIAction();
 			}

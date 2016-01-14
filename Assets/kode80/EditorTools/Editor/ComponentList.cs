@@ -53,15 +53,19 @@ namespace kode80.EditorTools
 			{
 				Component[] components = gameObject.GetComponents<Component>();
 				int index = 0;
-				int maxIndex = Math.Min( 0, components.Length - 1);
+				int maxIndex = Math.Max( 0, components.Length - 1);
 				foreach( Component component in components)
 				{
 					GUIContent componentName = new GUIContent( component.GetType().Name);
 					GUIDelayedIntField field = new GUIDelayedIntField( componentName, 
 																	   index++, 
-																	   0,
+																	   1,
 																	   maxIndex,
 																	   ComponentIndexChanged);
+					
+					// Transform is always first component & can't be reordered
+					field.isEnabled = index > 1;
+
 					_gui.Add( field);
 				}
 				Repaint();
@@ -71,16 +75,56 @@ namespace kode80.EditorTools
 		void ComponentIndexChanged( GUIBase sender)
 		{
 			GUIDelayedIntField field = sender as GUIDelayedIntField;
+			GameObject gameObject = SelectedGameObject();
+
+			ReorderComponentNamed( gameObject, field.previousValue, field.value);
+			RefreshList( gameObject);
+		}
+
+		void ReorderComponentNamed( GameObject gameObject, int index, int newIndex)
+		{
+			Component component = GetComponent( gameObject, index);
+			if( component != null)
+			{
+				if( newIndex < index)
+				{
+					while( UnityEditorInternal.ComponentUtility.MoveComponentUp( component) && --index != newIndex) {}
+				}
+				else if( newIndex > index)
+				{
+					while( UnityEditorInternal.ComponentUtility.MoveComponentDown( component) && ++index != newIndex) {}
+				}
+			}
+		}
+
+		GameObject SelectedGameObject()
+		{
+			return Selection.activeTransform != null ? Selection.activeTransform.gameObject : null;
+		}
+
+		Component GetComponent( GameObject gameObject, int index)
+		{
+			if( gameObject != null)
+			{
+				Component[] components = gameObject.GetComponents<Component>();
+
+				if( index >= 0 && index < components.Length)
+				{
+					return components[ index];
+				}
+			}
+
+			return null;
 		}
 
 		void OnEnable()
 		{
-			GameObject gameObject = Selection.activeTransform ? Selection.activeTransform.gameObject : null;
-			RefreshList( gameObject);
+			RefreshList( SelectedGameObject());
 		}
 
 		void OnDisable()
 		{
+			_gui = null;
 		}
 
 		void OnGUI()
