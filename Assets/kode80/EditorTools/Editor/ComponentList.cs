@@ -48,6 +48,7 @@ namespace kode80.EditorTools
 
 			if( gameObject == null)
 			{
+				_gui.Add( new GUILabel( new GUIContent( "Select a GameObject to edit it's component list.")));
 			}
 			else
 			{
