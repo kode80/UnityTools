@@ -52,6 +52,8 @@ namespace kode80.EditorTools
 			}
 			else
 			{
+				_gui.Add( new GUIButton( new GUIContent( "Highlight " + gameObject.name), HighlightSelectedGameObjectClicked));
+
 				GUIScrollView scrollView = new GUIScrollView();
 				_gui.Add( scrollView);
 
@@ -77,6 +79,13 @@ namespace kode80.EditorTools
 			Repaint();
 		}
 
+		#region GUI Actions
+
+		void HighlightSelectedGameObjectClicked( GUIBase sender)
+		{
+			EditorGUIUtility.PingObject( SelectedGameObject());
+		}
+
 		void ComponentIndexChanged( GUIBase sender)
 		{
 			GUIDelayedIntField field = sender as GUIDelayedIntField;
@@ -85,6 +94,8 @@ namespace kode80.EditorTools
 			ReorderComponentNamed( gameObject, field.previousValue, field.value);
 			RefreshList( gameObject);
 		}
+
+		#endregion
 
 		void ReorderComponentNamed( GameObject gameObject, int index, int newIndex)
 		{
