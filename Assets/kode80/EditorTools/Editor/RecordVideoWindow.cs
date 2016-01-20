@@ -10,6 +10,7 @@ namespace kode80.EditorTools
 	public class RecordVideoWindow : EditorWindow
 	{
 		const string HasInitializedPrefsKey = "kode80.EditorTools.RecordVideoWindow.HasInitialized";
+		const string RecordHotkeyPrefsKey = "kode80.EditorTools.RecordVideoWindow.RecordHotkey";
 		const string FFmpegPathPrefsKey = "kode80.EditorTools.RecordVideoWindow.FFmpegPath";
 		const string OutputFolderPrefsKey = "kode80.EditorTools.RecordVideoWindow.OutputFolder";
 		const string SuperSizePrefsKey = "kode80.EditorTools.RecordVideoWindow.SuperSize";
@@ -44,6 +45,7 @@ namespace kode80.EditorTools
 			_recordVideo = FindOrCreateRecordVideo();
 
 			_gui = new GUIVertical();
+
 			_gui.Add( new GUIButton( new GUIContent( FFmpegPathButtonText(), FFmpegPathButtonText()), PickFFmpegPathClicked));
 			_gui.Add( new GUIButton( new GUIContent( OutputFolderButtonText(), OutputFolderButtonText()), PickOutputFolderClicked));
 			_gui.Add( new GUIIntSlider( new GUIContent( "Super Size", 
@@ -60,6 +62,9 @@ namespace kode80.EditorTools
 											   DeleteFramesChanged)) as GUIToggle;
 			deleteFrames.isToggled = EditorPrefs.GetBool( DeleteFramesPrefsKey);
 			_gui.Add( new GUISpace());
+			_gui.Add( new GUIEnumPopup( new GUIContent( "Record Hotkey", "The key that will toggle recording during play mode"),
+										(KeyCode) EditorPrefs.GetInt( RecordHotkeyPrefsKey), 
+										RecordHotkeyChanged));
 			_recordButton = _gui.Add( new GUIButton( new GUIContent( "Record"), RecordClicked)) as GUIButton;
 			_recordButton.isEnabled = EditorApplication.isPlaying;
 
@@ -77,9 +82,13 @@ namespace kode80.EditorTools
 
 		void Update()
 		{
-			if( EditorApplication.isPlaying && Input.GetKeyDown( KeyCode.R))
+			if( EditorApplication.isPlaying)
 			{
-				ToggleRecording();
+				KeyCode recordHotKey = (KeyCode) EditorPrefs.GetInt( RecordHotkeyPrefsKey);
+				if( Input.GetKeyDown( recordHotKey))
+				{
+					ToggleRecording();
+				}
 			}
 		}
 
@@ -92,6 +101,12 @@ namespace kode80.EditorTools
 		}
 
 		#region GUI Actions
+
+		void RecordHotkeyChanged( GUIBase sender)
+		{
+			GUIEnumPopup popup = sender as GUIEnumPopup;
+			EditorPrefs.SetInt( RecordHotkeyPrefsKey, (int)(KeyCode)popup.value);
+		}
 
 		void PickOutputFolderClicked( GUIBase sender)
 		{
@@ -170,6 +185,7 @@ namespace kode80.EditorTools
 			bool hasInitialized = EditorPrefs.GetBool( HasInitializedPrefsKey);
 			if( hasInitialized == false)
 			{
+				EditorPrefs.SetInt( RecordHotkeyPrefsKey, (int)KeyCode.R);
 				EditorPrefs.DeleteKey( FFmpegPathPrefsKey);
 				EditorPrefs.DeleteKey( OutputFolderPrefsKey);
 				EditorPrefs.SetInt( SuperSizePrefsKey, 1);
