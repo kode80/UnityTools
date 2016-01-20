@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.IO;
+using System.Diagnostics;
 using System.Collections;
 using kode80.GUIWrapper;
 
@@ -127,6 +129,11 @@ namespace kode80.EditorTools
 			_recordVideo.StopRecording();
 			_recordButton.isEnabled = EditorApplication.isPlaying;
 			UpdateRecordButtonText();
+
+			if( EditorApplication.isPlayingOrWillChangePlaymode == false && EditorApplication.isPlaying == false)
+			{
+				CompileVideo( 0);
+			}
 		}
 
 		void InitializedPrefsIfNeeded()
@@ -190,6 +197,30 @@ namespace kode80.EditorTools
 			}
 			UpdateRecordButtonText();
 			Repaint();
+		}
+
+		void CompileVideo( int sceneNumber)
+		{
+			string path = EditorPrefs.GetString( FFmpegPathPrefsKey);
+
+			if( path.Length > 0 && File.Exists( path))
+			{
+				int framerate = EditorPrefs.GetInt( FrameratePrefsKey);
+				string outputPath = EditorPrefs.GetString( OutputFolderPrefsKey) + "/";
+				string args = string.Format( "-i \"Scene{0:D03}Frame%08d.png\" -y -c:v libx264 -pix_fmt yuv420p -r {1} -preset ultrafast \"output.mp4\"", 
+											 sceneNumber, framerate);
+				
+				Process process = new Process();
+				process.StartInfo.FileName = path;
+				process.StartInfo.Arguments = args;
+				process.StartInfo.WorkingDirectory = outputPath;
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardError = true;
+
+				process.Start();
+				UnityEngine.Debug.Log( "FFmpeg Output: " + process.StandardError.ReadToEnd());
+				process.WaitForExit();
+			}
 		}
 	}
 }
