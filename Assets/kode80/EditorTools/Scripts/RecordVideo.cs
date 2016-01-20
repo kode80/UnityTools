@@ -16,7 +16,10 @@ namespace kode80.EditorTools
 
 		private bool _isRecording = false;
 		public bool isRecording { get { return _isRecording; } }
+
 		private int _sceneNumber = 0;
+		public int sceneNumber { get { return _sceneNumber; } }
+
 		private int _frameNumber = 0;
 
 		void Start () 

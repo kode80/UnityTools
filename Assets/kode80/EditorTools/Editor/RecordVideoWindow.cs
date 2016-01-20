@@ -26,6 +26,7 @@ namespace kode80.EditorTools
 		private GUIVertical _gui;
 		private GUIButton _recordButton;
 		private RecordVideo _recordVideo;
+		private int _sceneCount = 0;
 
 		[MenuItem( "Window/kode80/Editor Tools/Record Video")]
 		public static void Init()
@@ -149,11 +150,7 @@ namespace kode80.EditorTools
 
 			if( EditorApplication.isPlayingOrWillChangePlaymode == false && EditorApplication.isPlaying == false)
 			{
-				OutputFormat format = (OutputFormat) EditorPrefs.GetInt( OutputFormatPrefsKey);
-				if( format != OutputFormat.Frames)
-				{
-					CompileVideo( 0, format == OutputFormat.FramesAndGIF);
-				}
+				CompileVideos();
 			}
 		}
 
@@ -216,9 +213,23 @@ namespace kode80.EditorTools
 			else
 			{
 				_recordVideo.StartRecording();
+				_sceneCount = _recordVideo.sceneNumber + 1;
 			}
 			UpdateRecordButtonText();
 			Repaint();
+		}
+
+		void CompileVideos()
+		{
+			OutputFormat format = (OutputFormat) EditorPrefs.GetInt( OutputFormatPrefsKey);
+			if( format != OutputFormat.Frames)
+			{
+				for( int i=0; i<_sceneCount; i++)
+				{
+					CompileVideo( i, format == OutputFormat.FramesAndGIF);
+				}
+				_sceneCount = 0;
+			}
 		}
 
 		void CompileVideo( int sceneNumber, bool createGif=false)
