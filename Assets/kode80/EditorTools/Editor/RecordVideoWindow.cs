@@ -8,6 +8,7 @@ namespace kode80.EditorTools
 	public class RecordVideoWindow : EditorWindow
 	{
 		const string OutputFolderPrefsKey = "kode80.EditorTools.RecordVideoWindow.OutputFolder";
+		const string SuperSizePrefsKey = "kode80.EditorTools.RecordVideoWindow.SuperSize";
 
 		private GUIVertical _gui;
 		private GUIButton _recordButton;
@@ -26,7 +27,10 @@ namespace kode80.EditorTools
 			_recordVideo = FindOrCreateRecordVideo();
 
 			_gui = new GUIVertical();
-			_gui.Add( new GUIButton( new GUIContent( OutputFolderButtonText()), PickOutputFolderClicked));
+			_gui.Add( new GUIButton( new GUIContent( OutputFolderButtonText(), OutputFolderButtonText()), PickOutputFolderClicked));
+			_gui.Add( new GUIIntSlider( new GUIContent( "Super Size", 
+														"Frames will be rendered at this multiple of the current resolution"), 
+										_recordVideo.superSize, 1, 4, SuperSizeChanged));
 			_gui.Add( new GUISpace());
 			_recordButton = _gui.Add( new GUIButton( new GUIContent( "Record"), RecordClicked)) as GUIButton;
 			_recordButton.isEnabled = EditorApplication.isPlaying;
@@ -70,7 +74,15 @@ namespace kode80.EditorTools
 				EditorPrefs.SetString( OutputFolderPrefsKey, path);
 				_recordVideo.folderPath = path;
 				button.content.text = OutputFolderButtonText();
+				button.content.tooltip = OutputFolderButtonText();
 			}
+		}
+
+		void SuperSizeChanged( GUIBase sender)
+		{
+			GUIIntSlider slider = sender as GUIIntSlider;
+			EditorPrefs.SetInt( SuperSizePrefsKey, slider.value);
+			_recordVideo.superSize = slider.value;
 		}
 
 		void RecordClicked( GUIBase sender)
@@ -99,6 +111,7 @@ namespace kode80.EditorTools
 			}
 
 			recordVideo.folderPath = EditorPrefs.GetString( OutputFolderPrefsKey);
+			recordVideo.superSize = EditorPrefs.GetInt( SuperSizePrefsKey);
 
 			return recordVideo;
 		}
