@@ -8,6 +8,7 @@ namespace kode80.EditorTools
 	public class RecordVideoWindow : EditorWindow
 	{
 		const string HasInitializedPrefsKey = "kode80.EditorTools.RecordVideoWindow.HasInitialized";
+		const string FFmpegPathPrefsKey = "kode80.EditorTools.RecordVideoWindow.FFmpegPath";
 		const string OutputFolderPrefsKey = "kode80.EditorTools.RecordVideoWindow.OutputFolder";
 		const string SuperSizePrefsKey = "kode80.EditorTools.RecordVideoWindow.SuperSize";
 		const string FrameratePrefsKey = "kode80.EditorTools.RecordVideoWindow.Framerate";
@@ -31,6 +32,7 @@ namespace kode80.EditorTools
 			_recordVideo = FindOrCreateRecordVideo();
 
 			_gui = new GUIVertical();
+			_gui.Add( new GUIButton( new GUIContent( FFmpegPathButtonText(), FFmpegPathButtonText()), PickFFmpegPathClicked));
 			_gui.Add( new GUIButton( new GUIContent( OutputFolderButtonText(), OutputFolderButtonText()), PickOutputFolderClicked));
 			_gui.Add( new GUIIntSlider( new GUIContent( "Super Size", 
 														"Frames will be rendered at this multiple of the current resolution"), 
@@ -85,6 +87,19 @@ namespace kode80.EditorTools
 			}
 		}
 
+		void PickFFmpegPathClicked( GUIBase sender)
+		{
+			GUIButton button = sender as GUIButton;
+			string oldPath = EditorPrefs.GetString( FFmpegPathPrefsKey);
+			string path = EditorUtility.OpenFilePanel( "Pick FFmpeg Path", oldPath, "");
+			if( path.Length > 0)
+			{
+				EditorPrefs.SetString( FFmpegPathPrefsKey, path);
+				button.content.text = FFmpegPathButtonText();
+				button.content.tooltip = FFmpegPathButtonText();
+			}
+		}
+
 		void SuperSizeChanged( GUIBase sender)
 		{
 			GUIIntSlider slider = sender as GUIIntSlider;
@@ -119,6 +134,7 @@ namespace kode80.EditorTools
 			bool hasInitialized = EditorPrefs.GetBool( HasInitializedPrefsKey);
 			if( hasInitialized == false)
 			{
+				EditorPrefs.DeleteKey( FFmpegPathPrefsKey);
 				EditorPrefs.DeleteKey( OutputFolderPrefsKey);
 				EditorPrefs.SetInt( SuperSizePrefsKey, 1);
 				EditorPrefs.SetInt( FrameratePrefsKey, 60);
@@ -148,11 +164,18 @@ namespace kode80.EditorTools
 			_recordButton.content.text = _recordVideo.isRecording ? "Stop" : "Record";
 		}
 
+		string FFmpegPathButtonText()
+		{
+			string path = EditorPrefs.GetString( FFmpegPathPrefsKey);
+			return path.Length == 0 ? "Pick FFmpeg Path" :
+									  "FFmpeg Path: " + path;
+		}
+
 		string OutputFolderButtonText()
 		{
 			bool pathNotSet = _recordVideo.folderPath == null || _recordVideo.folderPath.Length == 0;
 			return pathNotSet ? "Pick Output Folder" :
-								"Output Folder: " + _recordVideo.folderPath;
+				"Output Folder: " + _recordVideo.folderPath;
 		}
 
 		void ToggleRecording()
