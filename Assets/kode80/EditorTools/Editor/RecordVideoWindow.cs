@@ -207,8 +207,8 @@ namespace kode80.EditorTools
 			{
 				int framerate = EditorPrefs.GetInt( FrameratePrefsKey);
 				string outputPath = EditorPrefs.GetString( OutputFolderPrefsKey) + "/";
-				string args = string.Format( "-i \"Scene{0:D03}Frame%08d.png\" -y -c:v libx264 -pix_fmt yuv420p -r {1} -preset ultrafast \"output.mp4\"", 
-											 sceneNumber, framerate);
+				string args = string.Format( "-i \"Scene{0:D03}Frame%08d.png\" -y -c:v libx264 -pix_fmt yuv420p -r {1} -preset ultrafast \"Scene{2:D03}.mp4\"", 
+						 					 sceneNumber, framerate, sceneNumber);
 				
 				Process process = new Process();
 				process.StartInfo.FileName = path;
