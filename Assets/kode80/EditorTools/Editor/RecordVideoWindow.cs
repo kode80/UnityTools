@@ -15,6 +15,7 @@ namespace kode80.EditorTools
 		const string SuperSizePrefsKey = "kode80.EditorTools.RecordVideoWindow.SuperSize";
 		const string FrameratePrefsKey = "kode80.EditorTools.RecordVideoWindow.Framerate";
 		const string OutputFormatPrefsKey = "kode80.EditorTools.RecordVideoWindow.OutputFormat";
+		const string DeleteFramesPrefsKey = "kode80.EditorTools.RecordVideoWindow.DeleteFrames";
 
 		enum OutputFormat
 		{
@@ -54,6 +55,10 @@ namespace kode80.EditorTools
 			_gui.Add( new GUIEnumPopup( new GUIContent( "Output Format"), 
 										(OutputFormat) EditorPrefs.GetInt( OutputFormatPrefsKey), 
 										OutputFormatChanged));
+			GUIToggle deleteFrames = _gui.Add( new GUIToggle( new GUIContent( "Delete Frames", 
+																			  "Delete all frames after compiling videos"), 
+											   DeleteFramesChanged)) as GUIToggle;
+			deleteFrames.isToggled = EditorPrefs.GetBool( DeleteFramesPrefsKey);
 			_gui.Add( new GUISpace());
 			_recordButton = _gui.Add( new GUIButton( new GUIContent( "Record"), RecordClicked)) as GUIButton;
 			_recordButton.isEnabled = EditorApplication.isPlaying;
@@ -134,6 +139,12 @@ namespace kode80.EditorTools
 			EditorPrefs.SetInt( OutputFormatPrefsKey, (int)(OutputFormat)popup.value);
 		}
 
+		void DeleteFramesChanged( GUIBase sender)
+		{
+			GUIToggle toggle = sender as GUIToggle;
+			EditorPrefs.SetBool( DeleteFramesPrefsKey, toggle.isToggled);
+		}
+
 		void RecordClicked( GUIBase sender)
 		{
 			ToggleRecording();
@@ -164,6 +175,7 @@ namespace kode80.EditorTools
 				EditorPrefs.SetInt( SuperSizePrefsKey, 1);
 				EditorPrefs.SetInt( FrameratePrefsKey, 60);
 				EditorPrefs.SetInt( OutputFormatPrefsKey, (int)OutputFormat.FramesAndMP4);
+				EditorPrefs.SetBool( DeleteFramesPrefsKey, false);
 				EditorPrefs.SetBool( HasInitializedPrefsKey, true);
 			}
 		}
@@ -229,6 +241,11 @@ namespace kode80.EditorTools
 					CompileVideo( i, format == OutputFormat.FramesAndGIF);
 				}
 				_sceneCount = 0;
+
+				if( EditorPrefs.GetBool( DeleteFramesPrefsKey))
+				{
+					DeleteAllFrames();
+				}
 			}
 		}
 
@@ -256,6 +273,16 @@ namespace kode80.EditorTools
 				process.Start();
 				UnityEngine.Debug.Log( "FFmpeg Output: " + process.StandardError.ReadToEnd());
 				process.WaitForExit();
+			}
+		}
+
+		void DeleteAllFrames()
+		{
+			string outputFolder = EditorPrefs.GetString( OutputFolderPrefsKey);
+
+			foreach( string file in Directory.GetFiles( outputFolder, "Scene*Frame*.png"))
+			{
+				File.Delete( file);
 			}
 		}
 	}
