@@ -7,8 +7,10 @@ namespace kode80.EditorTools
 {
 	public class RecordVideoWindow : EditorWindow
 	{
+		const string HasInitializedPrefsKey = "kode80.EditorTools.RecordVideoWindow.HasInitialized";
 		const string OutputFolderPrefsKey = "kode80.EditorTools.RecordVideoWindow.OutputFolder";
 		const string SuperSizePrefsKey = "kode80.EditorTools.RecordVideoWindow.SuperSize";
+		const string FrameratePrefsKey = "kode80.EditorTools.RecordVideoWindow.Framerate";
 
 		private GUIVertical _gui;
 		private GUIButton _recordButton;
@@ -24,6 +26,8 @@ namespace kode80.EditorTools
 
 		void OnEnable()
 		{
+			InitializedPrefsIfNeeded();
+
 			_recordVideo = FindOrCreateRecordVideo();
 
 			_gui = new GUIVertical();
@@ -31,6 +35,9 @@ namespace kode80.EditorTools
 			_gui.Add( new GUIIntSlider( new GUIContent( "Super Size", 
 														"Frames will be rendered at this multiple of the current resolution"), 
 										_recordVideo.superSize, 1, 4, SuperSizeChanged));
+			_gui.Add( new GUIIntSlider( new GUIContent( "Framerate", 
+														"The fixed framerate of recorded video"), 
+										_recordVideo.captureFramerate, 10, 60, FramerateChanged));
 			_gui.Add( new GUISpace());
 			_recordButton = _gui.Add( new GUIButton( new GUIContent( "Record"), RecordClicked)) as GUIButton;
 			_recordButton.isEnabled = EditorApplication.isPlaying;
@@ -85,6 +92,13 @@ namespace kode80.EditorTools
 			_recordVideo.superSize = slider.value;
 		}
 
+		void FramerateChanged( GUIBase sender)
+		{
+			GUIIntSlider slider = sender as GUIIntSlider;
+			EditorPrefs.SetInt( FrameratePrefsKey, slider.value);
+			_recordVideo.captureFramerate = slider.value;
+		}
+
 		void RecordClicked( GUIBase sender)
 		{
 			ToggleRecording();
@@ -100,6 +114,18 @@ namespace kode80.EditorTools
 			UpdateRecordButtonText();
 		}
 
+		void InitializedPrefsIfNeeded()
+		{
+			bool hasInitialized = EditorPrefs.GetBool( HasInitializedPrefsKey);
+			if( hasInitialized == false)
+			{
+				EditorPrefs.DeleteKey( OutputFolderPrefsKey);
+				EditorPrefs.SetInt( SuperSizePrefsKey, 1);
+				EditorPrefs.SetInt( FrameratePrefsKey, 60);
+				EditorPrefs.SetBool( HasInitializedPrefsKey, true);
+			}
+		}
+
 		RecordVideo FindOrCreateRecordVideo()
 		{
 			RecordVideo recordVideo = FindObjectOfType<RecordVideo>();
@@ -112,6 +138,7 @@ namespace kode80.EditorTools
 
 			recordVideo.folderPath = EditorPrefs.GetString( OutputFolderPrefsKey);
 			recordVideo.superSize = EditorPrefs.GetInt( SuperSizePrefsKey);
+			recordVideo.captureFramerate = EditorPrefs.GetInt( FrameratePrefsKey);
 
 			return recordVideo;
 		}
@@ -123,8 +150,9 @@ namespace kode80.EditorTools
 
 		string OutputFolderButtonText()
 		{
-			return _recordVideo.folderPath == null ? "Pick Output Folder" :
-													 "Output Folder: " + _recordVideo.folderPath;
+			bool pathNotSet = _recordVideo.folderPath == null || _recordVideo.folderPath.Length == 0;
+			return pathNotSet ? "Pick Output Folder" :
+								"Output Folder: " + _recordVideo.folderPath;
 		}
 
 		void ToggleRecording()
