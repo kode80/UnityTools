@@ -206,7 +206,7 @@ namespace kode80.EditorTools
 			if( path.Length > 0 && File.Exists( path))
 			{
 				int framerate = EditorPrefs.GetInt( FrameratePrefsKey);
-				string outputPath = EditorPrefs.GetString( OutputFolderPrefsKey) + "/";
+				string outputPath = EditorPrefs.GetString( OutputFolderPrefsKey);
 				string args = string.Format( "-i \"Scene{0:D03}Frame%08d.png\" -y -c:v libx264 -pix_fmt yuv420p -r {1} -preset ultrafast \"Scene{2:D03}.mp4\"", 
 						 					 sceneNumber, framerate, sceneNumber);
 				
