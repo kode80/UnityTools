@@ -10,3 +10,7 @@ Various editor/GUI tools for Unity3D
   * Automatic MP4/GIF export (requires [FFmpeg](http://ffmpeg.org/))
 
 Download latest package: [kode80UnityTools.unitypackage](https://raw.github.com/kode80/UnityTools/master/kode80UnityTools.unitypackage)
+
+
+### known issues
+* RecordVideo outputs black frames when HW antialiasing is enabled. This is a Unity bug that only seems to affect certain systems. If you find your captured video is black, try disabling anti aliasing under Edit->Project Settings->Quality.
