@@ -34,6 +34,7 @@ namespace kode80.GUIWrapper
 		public bool isHidden;
 		public bool isEnabled;
 		public bool shouldStoreLastRect;
+		public int tag;
 
 		private Rect _lastRect;
 		public Rect lastRect { get { return _lastRect; } }
