@@ -45,7 +45,8 @@ namespace kode80.GUIWrapper
 		
 		protected override void CustomOnGUI ()
 		{
-			Color newColor = EditorGUILayout.ColorField( _content, color);
+			Color newColor = _content == null ? EditorGUILayout.ColorField( color) :
+												EditorGUILayout.ColorField( _content, color);
 			if( newColor != color)
 			{
 				color = newColor;
