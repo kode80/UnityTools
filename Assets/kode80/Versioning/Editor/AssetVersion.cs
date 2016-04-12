@@ -11,7 +11,8 @@ namespace kode80.Versioning
 		public string Author { get; private set; }
 		public SemanticVersion Version { get; private set; }
 		public string Notes { get; private set; }
-		public Uri Uri { get; private set; }
+		public Uri packageURI { get; private set; }
+		public Uri versionURI { get; private set; }
 
 		public static AssetVersion ParseXML( string xmlString)
 		{
@@ -24,9 +25,16 @@ namespace kode80.Versioning
 			XmlNode author = xml.SelectSingleNode( "asset/author");
 			XmlNode version = xml.SelectSingleNode( "asset/version");
 			XmlNode notes = xml.SelectSingleNode( "asset/notes");
-			XmlNode uri = xml.SelectSingleNode( "asset/uri");
+			XmlNode packageURI = xml.SelectSingleNode( "asset/package-uri");
+			XmlNode versionURI = xml.SelectSingleNode( "asset/version-uri");
 
-			if( name == null || author == null || version == null || notes == null || uri == null) {
+			if( name == null || 
+				author == null || 
+				version == null || 
+				notes == null || 
+				packageURI == null || 
+				versionURI == null) 
+			{
 				Debug.Log( "Error parsing Asset Version XML");
 				return null;
 			}
@@ -42,7 +50,8 @@ namespace kode80.Versioning
 			assetVersion.Author = author.InnerText;
 			assetVersion.Version = semanticVersion;
 			assetVersion.Notes = notes.InnerText;
-			assetVersion.Uri = new Uri( uri.InnerText);
+			assetVersion.packageURI = new Uri( packageURI.InnerText);
+			assetVersion.versionURI = new Uri( versionURI.InnerText);
 
 			return assetVersion;
 		}
@@ -53,7 +62,8 @@ namespace kode80.Versioning
 				"Author: " + Author + "\n" +
 				"Version: " + Version + "\n" +
 				"Notes: " + Notes + "\n" +
-				"URI: " + Uri;
+				"PackageURI: " + packageURI + "\n" +
+				"VersionURI: " + versionURI;
 		}
 	}
 }

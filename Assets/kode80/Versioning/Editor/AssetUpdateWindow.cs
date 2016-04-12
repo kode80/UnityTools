@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.IO;
 using System.Collections;
 using System.Xml;
 using System.Net;
@@ -22,17 +23,26 @@ namespace kode80.Versioning
 
 		void OnEnable()
 		{
-			Uri versionURI = new Uri( "http://kode80.com/assets/version/UnityTools.xml");
-			Debug.Log( versionURI);
-
-			WebClient client = new WebClient();
-			string xmlString = client.DownloadString( versionURI);
-
-			AssetVersion assetVersion = AssetVersion.ParseXML( xmlString);
-			if( assetVersion != null)
+			string[] paths = Directory.GetFiles( Application.dataPath, "AssetVersion.xml", SearchOption.AllDirectories);
+			foreach( string path in paths)
 			{
-				Debug.Log( assetVersion);
+				string localXML = File.ReadAllText( path);
+				AssetVersion localVersion = AssetVersion.ParseXML( localXML);
+				AssetVersion remoteVersion = DownloadRemoteVersionInfo( localVersion);
+
+				string status = remoteVersion.Version > localVersion.Version ? "out of date" : "up to date";
+				Debug.Log( localVersion.Name + " by " + localVersion.Author + " is " + status);
 			}
+
+
+		}
+
+		private AssetVersion DownloadRemoteVersionInfo( AssetVersion localVersion)
+		{
+			WebClient client = new WebClient();
+			string xmlString = client.DownloadString( localVersion.versionURI);
+
+			return AssetVersion.ParseXML( xmlString);
 		}
 	}
 }
