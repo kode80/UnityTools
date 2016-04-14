@@ -31,6 +31,8 @@ namespace kode80.GUIWrapper
 	{
 		private GUIContent _content;
 		public GUIContent content { get { return _content; } }
+
+		public GUIStyle style;
 		
 		public GUILabel( GUIContent content)
 		{
@@ -39,7 +41,12 @@ namespace kode80.GUIWrapper
 		
 		protected override void CustomOnGUI ()
 		{
-			GUILayout.Label( _content);
+			if( style == null) {
+				GUILayout.Label( _content);
+			}
+			else {
+				GUILayout.Label( _content, style);
+			}
 		}
 	}
 }

@@ -117,6 +117,9 @@ namespace kode80.Versioning
 			_assetUpdateLabels = new List<GUILabel>();
 			_assetUpdateButtonContainers = new List<GUIHorizontal>();
 
+			GUIStyle statusStyle = new GUIStyle( EditorStyles.label);
+			statusStyle.alignment = TextAnchor.MiddleRight;
+
 			int count = updater.AssetCount;
 			for( int i=0; i<count; i++)
 			{
@@ -132,6 +135,8 @@ namespace kode80.Versioning
 
 				GUIVertical updateContainer = bar.Add( new GUIVertical()) as GUIVertical;
 				GUILabel label = updateContainer.Add( new GUILabel( new GUIContent( labelText))) as GUILabel;
+				label.style = statusStyle;
+
 				GUIHorizontal buttonsContainer = updateContainer.Add( new GUIHorizontal()) as GUIHorizontal;
 				buttonsContainer.Add( new GUIButton( new GUIContent( "Release Notes"), ReleaseNotesButtonPressed));
 				buttonsContainer.Add( new GUIButton( new GUIContent( "Download"), DownloadButtonPressed));
