@@ -35,10 +35,10 @@ namespace kode80.Versioning
 			_localToRemoteVersions = new Dictionary<AssetVersion, AssetVersion>();
 		}
 
-		public void Refresh()
+		public void Refresh( bool forceRefresh = false)
 		{
 			List<AssetVersion> localVersions = FindLocalVersions();
-			if( VersionListsAreEqual( localVersions, _localVersions) == false)
+			if( forceRefresh || VersionListsAreEqual( localVersions, _localVersions) == false)
 			{
 				_localVersions = localVersions;
 

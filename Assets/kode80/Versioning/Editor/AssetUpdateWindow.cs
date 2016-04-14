@@ -73,6 +73,12 @@ namespace kode80.Versioning
 
 		#region GUI delegates
 
+		private void RefreshButtonPressed( GUIBase sender)
+		{
+			AssetUpdater.Instance.Refresh( true);
+			CreateGUI();
+		}
+
 		private void DownloadButtonPressed( GUIBase sender)
 		{
 			AssetVersion version = AssetUpdater.Instance.GetLocalVersion( sender.tag);
@@ -87,7 +93,6 @@ namespace kode80.Versioning
 
 		private void ReleaseNotesButtonPressed( GUIBase sender)
 		{
-			AssetVersion version = AssetUpdater.Instance.GetLocalVersion( sender.tag);
 			AssetVersion remoteVersion = AssetUpdater.Instance.GetRemoteVersion( sender.tag);
 
 			if( remoteVersion != null) 
@@ -136,6 +141,10 @@ namespace kode80.Versioning
 				_assetUpdateLabels.Add( label);
 				_assetUpdateButtonContainers.Add( buttonsContainer);
 			}
+
+			GUIHorizontal refreshContainer = scrollView.Add( new GUIHorizontal()) as GUIHorizontal;
+			refreshContainer.Add( new GUISpace( true));
+			refreshContainer.Add( new GUIButton( new GUIContent( "Refresh"), RefreshButtonPressed));
 		}
 
 		private string UpdateTextForVersion( AssetVersion local, AssetVersion remote)

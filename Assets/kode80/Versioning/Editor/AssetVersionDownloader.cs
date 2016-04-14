@@ -30,6 +30,7 @@ namespace kode80.Versioning
 		~AssetVersionDownloader()
 		{
 			EditorApplication.update -= MainThreadUpdate;
+			CancelAll();
 		}
 
 		public void Add( AssetVersion local)
