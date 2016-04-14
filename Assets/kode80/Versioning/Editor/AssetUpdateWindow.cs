@@ -26,12 +26,18 @@ namespace kode80.Versioning
 
 		void OnEnable()
 		{
+			AssetUpdater.Instance.remoteVersionDownloadFinished += RemoteVersionDownloadFinished;
+			AssetUpdater.Instance.remoteVersionDownloadFailed += RemoteVersionDownloadFailed;
+
 			AssetUpdater.Instance.Refresh();
 			CreateGUI();
 		}
 
 		void OnDisable()
 		{
+			AssetUpdater.Instance.remoteVersionDownloadFinished -= RemoteVersionDownloadFinished;
+			AssetUpdater.Instance.remoteVersionDownloadFailed -= RemoteVersionDownloadFailed;
+
 			_gui = null;
 			_assetUpdateLabels = null;
 			_assetUpdateButtonContainers = null;
@@ -43,6 +49,20 @@ namespace kode80.Versioning
 			{
 				_gui.OnGUI();
 			}
+		}
+
+		private void RemoteVersionDownloadFinished( AssetUpdater updater, int assetIndex)
+		{
+			AssetVersion local = AssetUpdater.Instance.GetLocalVersion( assetIndex);
+			AssetVersion remote = AssetUpdater.Instance.GetRemoteVersion( assetIndex);
+
+			_assetUpdateLabels[ assetIndex].content.text = UpdateTextForVersion( local, remote);
+			_assetUpdateButtonContainers[ assetIndex].isHidden = (local.Version < remote.Version) == false;
+		}
+
+		private void RemoteVersionDownloadFailed( AssetUpdater updater, int assetIndex)
+		{
+			_assetUpdateLabels[ assetIndex].content.text = "Error: couldn't download update info";
 		}
 
 		private void DownloadButtonPressed( GUIBase sender)

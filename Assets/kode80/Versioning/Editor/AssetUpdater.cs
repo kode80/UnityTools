@@ -7,8 +7,11 @@ namespace kode80.Versioning
 {
 	public class AssetUpdater
 	{
-		//public delegate void LocalVersionsChanged( AssetUpdater updater);
-		//public LocalVersionsChanged localVersionsChanged;
+		public delegate void RemoteVersionDownloadFinished( AssetUpdater updater, int assetIndex);
+		public RemoteVersionDownloadFinished remoteVersionDownloadFinished;
+
+		public delegate void RemoteVersionDownloadFailed( AssetUpdater updater, int assetIndex);
+		public RemoteVersionDownloadFailed remoteVersionDownloadFailed;
 
 		private static AssetUpdater _instance;
 		public static AssetUpdater Instance {
