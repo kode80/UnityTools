@@ -86,7 +86,6 @@ namespace kode80.Versioning
 
 			if( remoteVersion != null)
 			{
-				Debug.Log( (version.Version < remoteVersion.Version) ? "Local version out of date" : "Latest version installed");
  				Application.OpenURL( Uri.EscapeUriString( remoteVersion.packageURI.ToString()));
 			}
 		}
@@ -117,7 +116,9 @@ namespace kode80.Versioning
 			_assetUpdateLabels = new List<GUILabel>();
 			_assetUpdateButtonContainers = new List<GUIHorizontal>();
 
-			GUIStyle statusStyle = new GUIStyle( EditorStyles.label);
+			GUIStyle statusStyle = new GUIStyle();
+			statusStyle.margin = new RectOffset( 2, 4, 2, 2);
+			statusStyle.normal.textColor = new Color( 0.7f, 0.7f, 0.7f);
 			statusStyle.alignment = TextAnchor.MiddleRight;
 
 			int count = updater.AssetCount;
