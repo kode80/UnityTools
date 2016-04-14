@@ -51,6 +51,8 @@ namespace kode80.Versioning
 			}
 		}
 
+		#region AssetUpdater delegate
+
 		private void RemoteVersionDownloadFinished( AssetUpdater updater, int assetIndex)
 		{
 			AssetVersion local = AssetUpdater.Instance.GetLocalVersion( assetIndex);
@@ -58,12 +60,18 @@ namespace kode80.Versioning
 
 			_assetUpdateLabels[ assetIndex].content.text = UpdateTextForVersion( local, remote);
 			_assetUpdateButtonContainers[ assetIndex].isHidden = (local.Version < remote.Version) == false;
+			Repaint();
 		}
 
 		private void RemoteVersionDownloadFailed( AssetUpdater updater, int assetIndex)
 		{
 			_assetUpdateLabels[ assetIndex].content.text = "Error: couldn't download update info";
+			Repaint();
 		}
+
+		#endregion
+
+		#region GUI delegates
 
 		private void DownloadButtonPressed( GUIBase sender)
 		{
@@ -84,12 +92,12 @@ namespace kode80.Versioning
 
 			if( remoteVersion != null) 
 			{
-				Debug.Log( (version.Version < remoteVersion.Version) ? "Local version out of date" : "Latest version installed");
-
 				string title = remoteVersion.Name + " (" + remoteVersion.Version + ") Release Notes";
 				EditorUtility.DisplayDialog( title, remoteVersion.Notes, "OK");
 			}
 		}
+
+		#endregion
 
 		private void CreateGUI()
 		{
@@ -97,6 +105,7 @@ namespace kode80.Versioning
 
 			_gui = new GUIVertical();
 			GUIScrollView scrollView = _gui.Add( new GUIScrollView()) as GUIScrollView;
+
 			scrollView.Add( new GUILabel( new GUIContent( "Installed Assets")));
 
 			GUIStyle style = CreateBackgroundStyle( 55, 70);

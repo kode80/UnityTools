@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,10 +18,18 @@ namespace kode80.Versioning
 		private WebClient _webClient;
 		private List<AssetVersion> _queue;
 		private AssetVersion _currentLocalVersion;
+		private List<Action> _mainThreadDelegates;
 
 		public AssetVersionDownloader()
 		{
 			_queue = new List<AssetVersion>();
+			_mainThreadDelegates = new List<Action>();
+			EditorApplication.update += MainThreadUpdate;
+		}
+
+		~AssetVersionDownloader()
+		{
+			EditorApplication.update -= MainThreadUpdate;
 		}
 
 		public void Add( AssetVersion local)
@@ -38,6 +47,15 @@ namespace kode80.Versioning
 			_queue.Clear();
 		}
 
+		private void MainThreadUpdate()
+		{
+			if( _mainThreadDelegates.Count > 0)
+			{
+				_mainThreadDelegates[0].Invoke();
+				_mainThreadDelegates.RemoveAt( 0);
+			}
+		}
+
 		private void AttemptNextDownload()
 		{
 			if( _webClient == null && _queue.Count > 0)
@@ -52,7 +70,7 @@ namespace kode80.Versioning
 					try {
 						_webClient.DownloadStringAsync( _currentLocalVersion.versionURI);
 					}
-					catch( Exception e) {
+					catch( Exception) {
 						HandleFailedDownload();
 					}
 				}
@@ -82,23 +100,27 @@ namespace kode80.Versioning
 		private void HandleFinishedDownload( AssetVersion remote)
 		{
 			if( remoteVersionDownloadFinished != null) {
-				remoteVersionDownloadFinished( _currentLocalVersion, remote);
-			}
+				_mainThreadDelegates.Add( new Action( () => {
+					remoteVersionDownloadFinished( _currentLocalVersion, remote);
 
-			_currentLocalVersion = null;
-			_webClient = null;
-			AttemptNextDownload();
+					_currentLocalVersion = null;
+					_webClient = null;
+					AttemptNextDownload();
+				}));
+			}
 		}
 
 		private void HandleFailedDownload()
 		{
 			if( remoteVersionDownloadFailed != null) {
-				remoteVersionDownloadFailed( _currentLocalVersion);
-			}
+				_mainThreadDelegates.Add( new Action( () => {
+					remoteVersionDownloadFailed( _currentLocalVersion);
 
-			_currentLocalVersion = null;
-			_webClient = null;
-			AttemptNextDownload();
+					_currentLocalVersion = null;
+					_webClient = null;
+					AttemptNextDownload();
+				}));
+			}
 		}
 	}
 }

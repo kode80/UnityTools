@@ -19,7 +19,7 @@ namespace kode80.Versioning
 			XmlDocument xml = new XmlDocument();
 
 			try { xml.LoadXml( xmlString); }
-			catch( XmlException e) { return null; }
+			catch( XmlException) { return null; }
 
 			XmlNode name = xml.SelectSingleNode( "asset/name");
 			XmlNode author = xml.SelectSingleNode( "asset/author");
