@@ -81,7 +81,6 @@ namespace kode80.Versioning
 
 		private void DownloadButtonPressed( GUIBase sender)
 		{
-			AssetVersion version = AssetUpdater.Instance.GetLocalVersion( sender.tag);
 			AssetVersion remoteVersion = AssetUpdater.Instance.GetRemoteVersion( sender.tag);
 
 			if( remoteVersion != null)
