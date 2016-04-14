@@ -13,7 +13,8 @@ namespace kode80.Versioning
 	public class AssetUpdateWindow : EditorWindow 
 	{
 		private GUIVertical _gui;
-		private List<AssetVersion> _localVersions;
+		private List<GUILabel> _assetUpdateLabels;
+		private List<GUIHorizontal> _assetUpdateButtonContainers;
 
 		[MenuItem( "Window/kode80/Check for Asset Updates")]
 		public static void Init()
@@ -25,13 +26,15 @@ namespace kode80.Versioning
 
 		void OnEnable()
 		{
-			FindLocalVersions();
+			AssetUpdater.Instance.Refresh();
 			CreateGUI();
 		}
 
 		void OnDisable()
 		{
 			_gui = null;
+			_assetUpdateLabels = null;
+			_assetUpdateButtonContainers = null;
 		}
 
 		void OnGUI()
@@ -44,54 +47,81 @@ namespace kode80.Versioning
 
 		private void DownloadButtonPressed( GUIBase sender)
 		{
-			AssetVersion version = _localVersions[ sender.tag];
-			AssetVersion remoteVersion = DownloadRemoteVersionInfo( version);
-			Debug.Log( (version.Version < remoteVersion.Version) ? "Local version out of date" : "Latest version installed");
+			AssetVersion version = AssetUpdater.Instance.GetLocalVersion( sender.tag);
+			AssetVersion remoteVersion = AssetUpdater.Instance.GetRemoteVersion( sender.tag);
 
-			Application.OpenURL( Uri.EscapeUriString( remoteVersion.packageURI.ToString()));
+			if( remoteVersion != null)
+			{
+				Debug.Log( (version.Version < remoteVersion.Version) ? "Local version out of date" : "Latest version installed");
+ 				Application.OpenURL( Uri.EscapeUriString( remoteVersion.packageURI.ToString()));
+			}
 		}
 
 		private void ReleaseNotesButtonPressed( GUIBase sender)
 		{
-			AssetVersion version = _localVersions[ sender.tag];
-			AssetVersion remoteVersion = DownloadRemoteVersionInfo( version);
-			Debug.Log( (version.Version < remoteVersion.Version) ? "Local version out of date" : "Latest version installed");
+			AssetVersion version = AssetUpdater.Instance.GetLocalVersion( sender.tag);
+			AssetVersion remoteVersion = AssetUpdater.Instance.GetRemoteVersion( sender.tag);
 
-			string title = remoteVersion.Name + " (" + remoteVersion.Version + ") Release Notes";
-			EditorUtility.DisplayDialog( title, remoteVersion.Notes, "OK");
-		}
+			if( remoteVersion != null) 
+			{
+				Debug.Log( (version.Version < remoteVersion.Version) ? "Local version out of date" : "Latest version installed");
 
-		private AssetVersion DownloadRemoteVersionInfo( AssetVersion localVersion)
-		{
-			WebClient client = new WebClient();
-			Debug.Log( "Downloading: " + localVersion.versionURI);
-			string xmlString = client.DownloadString( localVersion.versionURI);
-
-			return AssetVersion.ParseXML( xmlString);
+				string title = remoteVersion.Name + " (" + remoteVersion.Version + ") Release Notes";
+				EditorUtility.DisplayDialog( title, remoteVersion.Notes, "OK");
+			}
 		}
 
 		private void CreateGUI()
 		{
+			AssetUpdater updater = AssetUpdater.Instance;
+
 			_gui = new GUIVertical();
 			GUIScrollView scrollView = _gui.Add( new GUIScrollView()) as GUIScrollView;
 			scrollView.Add( new GUILabel( new GUIContent( "Installed Assets")));
 
 			GUIStyle style = CreateBackgroundStyle( 55, 70);
+			_assetUpdateLabels = new List<GUILabel>();
+			_assetUpdateButtonContainers = new List<GUIHorizontal>();
 
-			for( int i=0; i<_localVersions.Count; i++)
+			int count = updater.AssetCount;
+			for( int i=0; i<count; i++)
 			{
-				AssetVersion version = _localVersions[i];
+				AssetVersion localVersion = updater.GetLocalVersion( i);
+				AssetVersion remoteVersion = updater.GetRemoteVersion( i);
+
 				GUIHorizontal bar = scrollView.Add( new GUIHorizontal( style)) as GUIHorizontal;
 				GUIVertical infoContainer = bar.Add( new GUIVertical()) as GUIVertical;
-				infoContainer.Add( new GUILabel( new GUIContent( version.Name + " (" + version.Version + ")")));
-				infoContainer.Add( new GUILabel( new GUIContent( version.Author)));
+				infoContainer.Add( new GUILabel( new GUIContent( localVersion.Name + " (" + localVersion.Version + ")")));
+				infoContainer.Add( new GUILabel( new GUIContent( localVersion.Author)));
 
-				GUIButton button = bar.Add( new GUIButton( new GUIContent( "Release Notes"), ReleaseNotesButtonPressed)) as GUIButton;
-				button.tag = i;
+				string labelText = UpdateTextForVersion( localVersion, remoteVersion);
 
-				button = bar.Add( new GUIButton( new GUIContent( "Download"), DownloadButtonPressed)) as GUIButton;
-				button.tag = i;
+				GUIVertical updateContainer = bar.Add( new GUIVertical()) as GUIVertical;
+				GUILabel label = updateContainer.Add( new GUILabel( new GUIContent( labelText))) as GUILabel;
+				GUIHorizontal buttonsContainer = updateContainer.Add( new GUIHorizontal()) as GUIHorizontal;
+				buttonsContainer.Add( new GUIButton( new GUIContent( "Release Notes"), ReleaseNotesButtonPressed));
+				buttonsContainer.Add( new GUIButton( new GUIContent( "Download"), DownloadButtonPressed));
+				buttonsContainer.isHidden = remoteVersion == null || 
+											(localVersion.Version < remoteVersion.Version) == false;
+
+				_assetUpdateLabels.Add( label);
+				_assetUpdateButtonContainers.Add( buttonsContainer);
 			}
+		}
+
+		private string UpdateTextForVersion( AssetVersion local, AssetVersion remote)
+		{
+			string text = "Checking for Updates...";
+			if( remote != null) {
+				if( remote.Version > local.Version) {
+					text = "Update Available: " + remote.Version;
+				}
+				else {
+					text = "Installed Version is Latest";
+				}	
+			}
+
+			return text;
 		}
 
 		private GUIStyle CreateBackgroundStyle( byte gray0, byte gray1)
@@ -111,21 +141,6 @@ namespace kode80.Versioning
 			style.normal.background = texture;
 
 			return style;
-		}
-
-		private void FindLocalVersions()
-		{
-			_localVersions = new List<AssetVersion>();
-			string[] paths = Directory.GetFiles( Application.dataPath, "AssetVersion.xml", SearchOption.AllDirectories);
-
-			foreach( string path in paths)
-			{
-				string localXML = File.ReadAllText( path);
-				AssetVersion localVersion = AssetVersion.ParseXML( localXML);
-				if( localVersion != null) {
-					_localVersions.Add( localVersion);
-				}
-			}
 		}
 	}
 }
