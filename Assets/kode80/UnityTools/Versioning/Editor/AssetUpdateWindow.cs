@@ -138,8 +138,14 @@ namespace kode80.Versioning
 				label.style = statusStyle;
 
 				GUIHorizontal buttonsContainer = updateContainer.Add( new GUIHorizontal()) as GUIHorizontal;
-				buttonsContainer.Add( new GUIButton( new GUIContent( "Release Notes"), ReleaseNotesButtonPressed));
-				buttonsContainer.Add( new GUIButton( new GUIContent( "Download"), DownloadButtonPressed));
+				GUIButton button = buttonsContainer.Add( new GUIButton( new GUIContent( "Release Notes"), 
+																		ReleaseNotesButtonPressed)) as GUIButton;
+				button.tag = i;
+
+				button = buttonsContainer.Add( new GUIButton( new GUIContent( "Download"), 
+															  DownloadButtonPressed)) as GUIButton;
+				button.tag = i;
+
 				buttonsContainer.isHidden = remoteVersion == null || 
 											(localVersion.Version < remoteVersion.Version) == false;
 
