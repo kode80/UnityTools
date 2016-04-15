@@ -27,25 +27,38 @@ using System.Collections;
 
 namespace kode80.GUIWrapper
 {
-	public class GUIScrollView : GUIBaseContainer 
+	public class GUIObjectField<T> : GUIBase where T : UnityEngine.Object
 	{
-		public GUILayoutOption[] layoutOptions;
+		public T value;
+		public bool allowsSceneObjects;
 
-		private Vector2 _scrollPosition;
+		private GUIContent _content;
+		public GUIContent content { get { return _content; } }
 
-		public GUIScrollView( params GUILayoutOption[] options)
+		public GUIObjectField( GUIContent content, bool allowsSceneObjects=true, OnGUIAction action=null, OnGUIPreAction preAction=null)
 		{
-			layoutOptions = options;
+			_content = content;
+			this.allowsSceneObjects = allowsSceneObjects;
+			if( preAction != null)
+			{
+				onGUIPreAction += preAction;
+			}
+
+			if( action != null)
+			{
+				onGUIAction += action;
+			}
 		}
 
-		protected override void BeginContainerOnGUI()
+		protected override void CustomOnGUI ()
 		{
-			_scrollPosition = EditorGUILayout.BeginScrollView( _scrollPosition, layoutOptions);
-		}
-
-		protected override void EndContainerOnGUI()
-		{
-			EditorGUILayout.EndScrollView();
+			T newValue = EditorGUILayout.ObjectField( _content, value, typeof( T), allowsSceneObjects) as T;
+			if( newValue != value)
+			{
+				CallGUIPreAction();
+				value = newValue;
+				CallGUIAction();
+			}
 		}
 	}
 }

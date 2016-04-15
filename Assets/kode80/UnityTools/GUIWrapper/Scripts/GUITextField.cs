@@ -27,25 +27,32 @@ using System.Collections;
 
 namespace kode80.GUIWrapper
 {
-	public class GUIScrollView : GUIBaseContainer 
+	public class GUITextField : GUIBase 
 	{
-		public GUILayoutOption[] layoutOptions;
+		public string value;
 
-		private Vector2 _scrollPosition;
-
-		public GUIScrollView( params GUILayoutOption[] options)
+		private GUIContent _content;
+		public GUIContent content { get { return _content; } }
+		
+		public GUITextField( GUIContent content, string value="", OnGUIAction action=null)
 		{
-			layoutOptions = options;
+			this.value = value;
+			
+			_content = content;
+			if( action != null)
+			{
+				onGUIAction += action;
+			}
 		}
-
-		protected override void BeginContainerOnGUI()
+		
+		protected override void CustomOnGUI ()
 		{
-			_scrollPosition = EditorGUILayout.BeginScrollView( _scrollPosition, layoutOptions);
-		}
-
-		protected override void EndContainerOnGUI()
-		{
-			EditorGUILayout.EndScrollView();
+			string newValue = EditorGUILayout.TextField( _content, value);
+			if( newValue != value)
+			{
+				value = newValue;
+				CallGUIAction();
+			}
 		}
 	}
 }
