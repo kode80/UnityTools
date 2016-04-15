@@ -7,6 +7,7 @@
 * Added GUIPopup
 * GUIScrollView now accepts layout options
 * GUITextureField now accepts an OnPreAction
+* Moved GUIWrapper to Editor folder (fixes builds)
 	</notes>
 	<package-uri>https://raw.github.com/kode80/UnityTools/master/kode80UnityTools.unitypackage</package-uri>
 	<version-uri>https://raw.github.com/kode80/UnityTools/master/Assets/kode80/UnityTools/AssetVersion.xml</version-uri>
