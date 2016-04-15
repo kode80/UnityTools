@@ -4,6 +4,7 @@
 	<version>1.2.0</version>
 	<notes>* Added GUIObjectField
 * Added GUITextField
+* Added GUIPopup
 * GUIScrollView now accepts layout options
 * GUITextureField now accepts an OnPreAction
 	</notes>
