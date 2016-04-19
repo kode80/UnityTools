@@ -14,7 +14,7 @@ namespace kode80.Versioning
 	{
 		private GUIVertical _gui;
 		private List<GUILabel> _assetUpdateLabels;
-		private List<GUIHorizontal> _assetUpdateButtonContainers;
+		private List<GUIButton> _downloadButtons;
 
 		[MenuItem( "Window/kode80/Check for Asset Updates")]
 		public static void Init()
@@ -40,7 +40,7 @@ namespace kode80.Versioning
 
 			_gui = null;
 			_assetUpdateLabels = null;
-			_assetUpdateButtonContainers = null;
+			_downloadButtons = null;
 		}
 
 		void OnGUI()
@@ -59,7 +59,7 @@ namespace kode80.Versioning
 			AssetVersion remote = AssetUpdater.Instance.GetRemoteVersion( assetIndex);
 
 			_assetUpdateLabels[ assetIndex].content.text = UpdateTextForVersion( local, remote);
-			_assetUpdateButtonContainers[ assetIndex].isHidden = (local.Version < remote.Version) == false;
+			_downloadButtons[ assetIndex].isHidden = (local.Version < remote.Version) == false;
 			Repaint();
 		}
 
@@ -91,13 +91,13 @@ namespace kode80.Versioning
 
 		private void ReleaseNotesButtonPressed( GUIBase sender)
 		{
+			AssetVersion localVersion = AssetUpdater.Instance.GetLocalVersion( sender.tag);
 			AssetVersion remoteVersion = AssetUpdater.Instance.GetRemoteVersion( sender.tag);
+			AssetVersion version = remoteVersion != null && localVersion.Version < remoteVersion.Version ?
+								   remoteVersion : localVersion;
 
-			if( remoteVersion != null) 
-			{
-				string title = remoteVersion.Name + " (" + remoteVersion.Version + ") Release Notes";
-				EditorUtility.DisplayDialog( title, remoteVersion.Notes, "OK");
-			}
+			string title = version.Name + " (" + version.Version + ") Release Notes";
+			EditorUtility.DisplayDialog( title, version.Notes, "OK");
 		}
 
 		#endregion
@@ -113,7 +113,7 @@ namespace kode80.Versioning
 
 			GUIStyle style = CreateBackgroundStyle( 55, 70);
 			_assetUpdateLabels = new List<GUILabel>();
-			_assetUpdateButtonContainers = new List<GUIHorizontal>();
+			_downloadButtons = new List<GUIButton>();
 
 			GUIStyle statusStyle = new GUIStyle();
 			statusStyle.margin = new RectOffset( 2, 4, 2, 2);
@@ -145,12 +145,11 @@ namespace kode80.Versioning
 				button = buttonsContainer.Add( new GUIButton( new GUIContent( "Download"), 
 															  DownloadButtonPressed)) as GUIButton;
 				button.tag = i;
-
-				buttonsContainer.isHidden = remoteVersion == null || 
-											(localVersion.Version < remoteVersion.Version) == false;
+				button.isHidden = remoteVersion == null || 
+								  (localVersion.Version < remoteVersion.Version) == false;
 
 				_assetUpdateLabels.Add( label);
-				_assetUpdateButtonContainers.Add( buttonsContainer);
+				_downloadButtons.Add( button);
 			}
 
 			GUIHorizontal refreshContainer = scrollView.Add( new GUIHorizontal()) as GUIHorizontal;
