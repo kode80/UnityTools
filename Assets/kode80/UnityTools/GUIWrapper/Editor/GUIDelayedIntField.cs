@@ -58,7 +58,7 @@ namespace kode80.GUIWrapper
 			int newValue = EditorGUILayout.DelayedIntField( _content, value);
 			#else
 			int newValue = EditorGUILayout.IntField( _content, value);
-			#elif
+			#endif
 
 			if( newValue != value && newValue >= minValue && newValue <= maxValue)
 			{
