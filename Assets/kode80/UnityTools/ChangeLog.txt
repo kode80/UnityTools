@@ -3,6 +3,7 @@ kode80 Unity Tools ChangeLog
 
 kode80 Unity Tools 1.2.2 (April 20th 2016):
 * Fixed GUIDelayedIntField on < Unity 5.3.0
+* Added AssetUpdater UI for editor Personal Theme
 
 kode80 Unity Tools 1.2.1 (April 15th 2016):
 * Fixed https uri's failing on Windows

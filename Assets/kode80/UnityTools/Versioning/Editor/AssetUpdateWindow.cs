@@ -111,13 +111,16 @@ namespace kode80.Versioning
 
 			scrollView.Add( new GUILabel( new GUIContent( "Installed Assets")));
 
-			GUIStyle style = CreateBackgroundStyle( 55, 70);
+
+			GUIStyle style = EditorGUIUtility.isProSkin ? CreateBackgroundStyle( 55, 70) : 
+				CreateBackgroundStyle( 170, 235);
 			_assetUpdateLabels = new List<GUILabel>();
 			_downloadButtons = new List<GUIButton>();
 
 			GUIStyle statusStyle = new GUIStyle();
 			statusStyle.margin = new RectOffset( 2, 4, 2, 2);
-			statusStyle.normal.textColor = new Color( 0.7f, 0.7f, 0.7f);
+			statusStyle.normal.textColor = EditorGUIUtility.isProSkin ? new Color( 0.6f, 0.6f, 0.6f) :
+				new Color( 0.4f, 0.4f, 0.4f);
 			statusStyle.alignment = TextAnchor.MiddleRight;
 
 			int count = updater.AssetCount;

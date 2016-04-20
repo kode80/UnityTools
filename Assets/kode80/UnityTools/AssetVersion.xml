@@ -3,6 +3,7 @@
 	<author>kode80</author>
 	<version>1.2.2</version>
 	<notes>Fixed GUIDelayedIntField on &lt; Unity 5.3.0
+* Added AssetUpdater UI for editor Personal Theme
 	</notes>
 	<package-uri>https://raw.github.com/kode80/UnityTools/master/kode80UnityTools.unitypackage</package-uri>
 	<version-uri>https://raw.github.com/kode80/UnityTools/master/Assets/kode80/UnityTools/AssetVersion.xml</version-uri>
