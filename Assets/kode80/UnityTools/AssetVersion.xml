@@ -2,7 +2,7 @@
 	<name>Unity Tools</name>
 	<author>kode80</author>
 	<version>1.2.2</version>
-	<notes>*Fixed GUIDelayedIntField on &lt; Unity 5.3.0
+	<notes>* Fixed GUIDelayedIntField on &lt; Unity 5.3.0
 * Added AssetUpdater UI for editor Personal Theme
 * Fixed exception when local version files are moved mid-download
 	</notes>
