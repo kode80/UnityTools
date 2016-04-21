@@ -54,6 +54,7 @@ namespace kode80.Versioning
 				_webClient.CancelAsync();
 			}
 
+			_mainThreadDelegates.Clear();
 			_queue.Clear();
 		}
 
@@ -61,8 +62,9 @@ namespace kode80.Versioning
 		{
 			if( _mainThreadDelegates.Count > 0)
 			{
-				_mainThreadDelegates[0].Invoke();
+				Action action = _mainThreadDelegates[0];
 				_mainThreadDelegates.RemoveAt( 0);
+				action.Invoke();
 			}
 		}
 

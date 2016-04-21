@@ -40,12 +40,17 @@ namespace kode80.Versioning
 			List<AssetVersion> localVersions = FindLocalVersions();
 			if( forceRefresh || VersionListsAreEqual( localVersions, _localVersions) == false)
 			{
-				_localVersions = localVersions;
+				if( _downloader != null) {
+					_downloader.CancelAll();
+					_downloader.remoteVersionDownloadFinished -= RemoteVersionDownloaderFinished;
+					_downloader.remoteVersionDownloadFailed -= RemoteVersionDownloaderFailed;
+				}
 
 				_downloader = new AssetVersionDownloader();
 				_downloader.remoteVersionDownloadFinished += RemoteVersionDownloaderFinished;
 				_downloader.remoteVersionDownloadFailed += RemoteVersionDownloaderFailed;
 
+				_localVersions = localVersions;
 				foreach( AssetVersion local in _localVersions) {
 					_downloader.Add( local);
 				}
@@ -53,7 +58,8 @@ namespace kode80.Versioning
 		}
 
 		public AssetVersion GetLocalVersion( int index) {
-			return _localVersions[ index];
+			bool validIndex = index >= 0 && index < _localVersions.Count;
+			return validIndex ? _localVersions[ index] : null;
 		}
 
 		public AssetVersion GetRemoteVersion( int index) {
