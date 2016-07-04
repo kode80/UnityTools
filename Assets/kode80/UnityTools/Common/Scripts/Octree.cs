@@ -77,8 +77,8 @@ namespace kode80.Common
 			if( node.Contents.Count > 1 && currentDepth < maxDepth) 
 			{
 				node.Subdivide();
-				foreach( OctreeNode<T> subNode in node.SubNodes) {
-					SubdivideOctree( subNode, currentDepth+1, maxDepth);
+				for( int i=0; i<8; i++) {
+					SubdivideOctree( node.SubNodes[i], currentDepth+1, maxDepth);
 				}
 			}
 		}
