@@ -11,6 +11,7 @@ Various editor/GUI tools for Unity3D
 * AssetUpdate: automatic asset update system for non-asset store assets
 * SceneViewCamera: hack to control the scene view's camera, allowing for high-precision (1/100th of a Unit) movement
 * Composite Colliders: new collider types generated from primitives; Cylinders (with optional caps), Chains
+* Generic Octree: simple octree implementation, easily extendable via C# generics and delegates
 
 Download latest package: [kode80UnityTools.unitypackage](https://raw.github.com/kode80/UnityTools/master/kode80UnityTools.unitypackage)
 
