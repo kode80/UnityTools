@@ -40,9 +40,11 @@ namespace kode80.Common
 			}
 		}
 
-		public void AddItem( IList<T> items) {
-			foreach( T item in items) {
-				AddItem( item);
+		public void AddItem( IList<T> items) 
+		{
+			int count = items.Count;
+			for( int i=0; i<count; i++) {
+				AddItem( items[i]);
 			}
 		}
 
@@ -85,9 +87,10 @@ namespace kode80.Common
 			{
 				foundNodes.Add( this);
 
-				if( subNodes != null) {
-					foreach( OctreeNode<T> subNode in subNodes) {
-						subNode.SearchNodesContainingItem( item, foundNodes);
+				if( subNodes != null) 
+				{
+					for( int i=0; i<8; i++) {
+						subNodes[i].SearchNodesContainingItem( item, foundNodes);
 					}
 				}
 			}
