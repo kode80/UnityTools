@@ -74,6 +74,19 @@ namespace kode80.Common
 			contents.Clear();
 		}
 
+		public List<T> GetAllContents()
+		{
+			List<T> allContents = new List<T>();
+			CollectContents( this, allContents);
+			return allContents;
+		}
+
+		public void Collapse()
+		{
+			contents = GetAllContents();
+			subNodes = null;
+		}
+
 		public List<OctreeNode<T>> GetNodesContainingItem( T item)
 		{
 			var nodes = new List<OctreeNode<T>>();
@@ -92,6 +105,18 @@ namespace kode80.Common
 					for( int i=0; i<8; i++) {
 						subNodes[i].SearchNodesContainingItem( item, foundNodes);
 					}
+				}
+			}
+		}
+
+		protected void CollectContents( OctreeNode<T> node, List<T> allContents)
+		{
+			allContents.AddRange( node.contents);
+
+			if( node.SubNodes != null)
+			{
+				for( int i=0; i<8; i++) {
+					CollectContents( node.SubNodes[i], allContents);
 				}
 			}
 		}
