@@ -30,13 +30,13 @@ namespace kode80.Common
 
 		public void Add( T item)
 		{
-			rootNode.AddItem( item);
+			rootNode.Add( item);
 			Regenerate();
 		}
 
 		public void Add( IList<T> items)
 		{
-			rootNode.AddItem( items);
+			rootNode.Add( items);
 			Regenerate();
 		}
 

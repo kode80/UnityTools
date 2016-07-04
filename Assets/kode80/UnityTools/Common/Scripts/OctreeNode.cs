@@ -25,7 +25,7 @@ namespace kode80.Common
 			this.itemOverlapsBounds = itemOverlapsBounds;
 		}
 
-		public void AddItem( T item)
+		public void Add( T item)
 		{
 			if( itemOverlapsBounds( item, bounds)) 
 			{
@@ -34,17 +34,17 @@ namespace kode80.Common
 				}
 				else {
 					for( int i=0; i<8; i++) {
-						subNodes[i].AddItem( item);
+						subNodes[i].Add( item);
 					}
 				}
 			}
 		}
 
-		public void AddItem( IList<T> items) 
+		public void Add( IList<T> items) 
 		{
 			int count = items.Count;
 			for( int i=0; i<count; i++) {
-				AddItem( items[i]);
+				Add( items[i]);
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace kode80.Common
 						subNodes[index] = new OctreeNode<T>( bounds, itemOverlapsBounds);
 						int count = contents.Count;
 						for( int i=0; i<count; i++) {
-							subNodes[index].AddItem( contents[i]);
+							subNodes[index].Add( contents[i]);
 						}
 						index++;
 					}
