@@ -6,7 +6,7 @@ namespace kode80.Common
 {
 	public class Octree<T>
 	{
-		private OctreeNode<T> rootNode;
+		protected OctreeNode<T> rootNode;
 
 		private int maxDepth;
 		public int MaxDepth {
@@ -66,7 +66,7 @@ namespace kode80.Common
 			}
 		}
 
-		private void Regenerate()
+		protected void Regenerate()
 		{
 			rootNode.Collapse();
 			SubdivideOctree( rootNode, 0, maxDepth);
