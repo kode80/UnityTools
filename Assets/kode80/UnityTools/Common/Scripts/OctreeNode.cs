@@ -94,6 +94,11 @@ namespace kode80.Common
 			return nodes;
 		}
 
+		public void DrawGizmo()
+		{
+			Gizmos.DrawWireCube( bounds.center, bounds.size);
+		}
+
 		protected void SearchNodesContainingItem( T item, List<OctreeNode<T>> foundNodes)
 		{
 			if( itemOverlapsBounds( item, bounds))
