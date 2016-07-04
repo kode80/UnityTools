@@ -11,7 +11,7 @@ using UnityEditor;
 public class OctreeTransformTest : MonoBehaviour 
 {
 	public bool recreateOctree;
-	private Octree<Transform> octree;
+	private TransformOctree octree;
 	private List<OctreeNode<Transform>> foundNodes;
 
 	// Use this for initialization
@@ -63,12 +63,7 @@ public class OctreeTransformTest : MonoBehaviour
 			}
 		}
 
-		octree = new Octree<Transform>( bounds, HandleItemOverlapsBounds, 8);
+		octree = new TransformOctree( bounds, 8);
 		octree.Add( contents);
-	}
-
-	private bool HandleItemOverlapsBounds(Transform item, Bounds bounds)
-	{
-		return bounds.Contains( item.position);
 	}
 }
