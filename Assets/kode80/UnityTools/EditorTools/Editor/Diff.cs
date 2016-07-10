@@ -10,7 +10,8 @@ namespace kode80.EditorTools
 		public GameObject gameObjectA;
 		public GameObject gameObjectB;
 		public string propertyName;
-		public string gameObjectPath;
+		public string gameObjectAPath;
+		public string gameObjectBPath;
 		public SerializedPropertyType propertyType;
 	}
 
@@ -18,14 +19,22 @@ namespace kode80.EditorTools
 	{
 		private Vector2 scrollPosition;
 
-		public void Compare( GameObject gameObjectA, GameObject gameObjectB, List<DiffRecord> diffProperties, string gameObjectPath = "")
+		public List<DiffRecord> Compare( GameObject gameObjectA, GameObject gameObjectB)
 		{
-			if( gameObjectPath == "") {
-				gameObjectPath = gameObjectA.name;
-			}
-			else {
-				gameObjectPath += "." + gameObjectA.name;
-			}
+			var diffs = new List<DiffRecord>();
+			Compare( gameObjectA, gameObjectB, "", "", diffs);
+			return diffs;
+		}
+
+		private void Compare( GameObject gameObjectA, GameObject gameObjectB, 
+							  string gameObjectAPath, string gameObjectBPath, 
+							  List<DiffRecord> diffs)
+		{
+			if( gameObjectAPath == "") { gameObjectAPath = gameObjectA.name; }
+			else { gameObjectAPath += "." + gameObjectA.name; }
+
+			if( gameObjectBPath == "") { gameObjectBPath = gameObjectB.name; }
+			else { gameObjectBPath += "." + gameObjectB.name; }
 
 			var componentsA = gameObjectA.GetComponents<Component>();
 			var componentsB = gameObjectB.GetComponents<Component>();
@@ -58,8 +67,9 @@ namespace kode80.EditorTools
 							record.gameObjectB = gameObjectB;
 							record.propertyName = iterA.propertyPath;
 							record.propertyType = iterA.propertyType;
-							record.gameObjectPath = gameObjectPath;
-							diffProperties.Add( record);
+							record.gameObjectAPath = gameObjectAPath;
+							record.gameObjectBPath = gameObjectBPath;
+							diffs.Add( record);
 						}
 					}
 					else
@@ -79,9 +89,10 @@ namespace kode80.EditorTools
 			for( int j=0; j<childCountA; j++) 
 			{
 				Compare( gameObjectA.transform.GetChild( j).gameObject,
-					gameObjectB.transform.GetChild( j).gameObject,
-					diffProperties, 
-					gameObjectPath);
+						 gameObjectB.transform.GetChild( j).gameObject,
+						 gameObjectAPath,
+						 gameObjectBPath,
+						 diffs);
 			}
 		}
 

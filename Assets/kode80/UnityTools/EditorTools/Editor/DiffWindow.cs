@@ -57,11 +57,8 @@ namespace kode80.EditorTools
 				gameObjectA != null &&
 				gameObjectB != null)
 			{
-				diffs.Clear();
 				selectedIndex = -1;
-
-				var diff = new Diff();
-				diff.Compare( gameObjectA, gameObjectB, diffs);
+				diffs = new Diff().Compare( gameObjectA, gameObjectB);
 			}
 
 
@@ -73,12 +70,9 @@ namespace kode80.EditorTools
 			{
 				var record = diffs[ i];
 
-				EditorGUILayout.BeginVertical();
-
-				EditorGUILayout.LabelField( record.gameObjectPath + "." + record.propertyName + " (" + record.propertyType + ") ");
-
 				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.BeginVertical();
+				EditorGUILayout.LabelField( record.gameObjectAPath + "." + record.propertyName + " (" + record.propertyType + ") ");
 				if( GUILayout.Button( "Select " + record.gameObjectA.name)) {
 					Selection.activeGameObject = record.gameObjectA;
 					selectedIndex = i;
@@ -86,6 +80,7 @@ namespace kode80.EditorTools
 				EditorGUILayout.EndVertical();
 
 				EditorGUILayout.BeginVertical();
+				EditorGUILayout.LabelField( record.gameObjectBPath + "." + record.propertyName + " (" + record.propertyType + ") ");
 				if( GUILayout.Button( "Select " + record.gameObjectB.name)) {
 					Selection.activeGameObject = record.gameObjectB;
 					selectedIndex = i;
@@ -93,7 +88,6 @@ namespace kode80.EditorTools
 				EditorGUILayout.EndVertical();
 				EditorGUILayout.EndHorizontal();
 
-				EditorGUILayout.EndVertical();
 				EditorGUILayout.Space();
 			}
 
