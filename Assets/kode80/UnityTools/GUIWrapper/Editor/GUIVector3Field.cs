@@ -34,7 +34,7 @@ namespace kode80.GUIWrapper
 		private GUIContent _content;
 		public GUIContent content { get { return _content; } }
 		
-		public GUIVector3Field( GUIContent content, Vector3 vec = Vector3.zero, OnGUIAction action=null)
+		public GUIVector3Field( GUIContent content, Vector3 vec, OnGUIAction action=null)
 		{
 			vector = vec;
 			_content = content;
