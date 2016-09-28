@@ -69,4 +69,44 @@ namespace kode80.GUIWrapper
 			}
 		}
 	}
+	
+	public class GUIPopup<T> : GUIBase
+	{
+		public T value;
+		int indexValue = -1;
+		T[] displayedOptions;
+		string[] optionsNames;
+
+		private GUIContent _content;
+		public GUIContent content { get { return _content; } }
+
+		public GUIPopup( GUIContent content, T[] options, int indexVal, OnGUIAction action = null )
+		{
+			_content = content;
+			this.value = options[indexVal];
+			indexValue = indexVal;
+			displayedOptions = options;
+			optionsNames = new string[displayedOptions.Length];
+			for( int i = 0; i < displayedOptions.Length; ++i )
+			{
+				optionsNames[i] = displayedOptions[i].ToString();
+			}
+
+			if( action != null )
+			{
+				onGUIAction += action;
+			}
+		}
+
+		protected override void CustomOnGUI()
+		{
+			int newValue = EditorGUILayout.Popup( content.text, indexValue, optionsNames );
+			if( newValue != indexValue )
+			{
+				indexValue = newValue;
+				value = displayedOptions[indexValue];
+				CallGUIAction();
+			}
+		}
+	}
 }
